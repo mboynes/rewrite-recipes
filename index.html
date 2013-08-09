@@ -82,14 +82,14 @@
 						<pre class="fragment"><code data-trim contenteditable>
 register_taxonomy( 'make', 'model', array(
   'rewrite' => array(
-    'slug' => 'inventory'
+	'slug' => 'inventory'
   )
 ) );
 
 register_post_type( 'model', array(
   'public' => true,
   'rewrite' => array(
-    'slug' => 'inventory/%make%'
+	'slug' => 'inventory/%make%'
   )
 ) );
 						</code></pre>
@@ -101,9 +101,9 @@ register_post_type( 'model', array(
 						<pre class="fragment"><code data-trim contenteditable>
 function modify_model_links( $link, $post ) {
   if ( 'model' == $post->post_type ) {
-    if ( $makes = get_the_terms( $post->ID, 'make' ) ) {
-      return str_replace( '%make%', array_unshift( $makes )->slug, $link );
-    }
+	if ( $makes = get_the_terms( $post->ID, 'make' ) ) {
+	  return str_replace( '%make%', array_unshift( $makes )->slug, $link );
+	}
   }
   return $link;
 }
@@ -129,7 +129,75 @@ add_filter( 'post_type_link', 'modify_model_links', 10, 2 );
 				</section>
 
 				<section>
+					<h2>Awesome.</h2>
+					<img src="images/self_high_five.gif" alt="High Five" />
+					<aside class="notes">
+						I do complex rewrite work all the time. Every site I build. And this, what we just did, never ceases to amaze me. Do you all believe what we just did? Do you believe how easy that was? Let's just take a moment and say, "Holy crap, that was really cool!"
+					</aside>
+				</section>
 
+				<section>
+
+					<section>
+						<h2>What's happening here?</h2>
+						<ol>
+							<li class="fragment">Request comes in</li>
+							<li class="fragment">WP::parse_request converts the URL to query args</li>
+							<li class="fragment">WP_Query::parse_query converts the query args to a query</li>
+							<li class="fragment">WP_Query::get_posts converts this into SQL (and posts)</li>
+						</ol>
+					</section>
+
+					<section>
+						<h2>Anatomy of a Rewrite Rule</h2>
+						<p class="fragment">Array key => value</p>
+						<p class="fragment">Regular expression (the rule) => Redirect (resulting URL)</p>
+					</section>
+
+					<section>
+						<h2>Storage and Flushing</h2>
+						<ul>
+							<li class="fragment">Rewrite rules are stored in wp_options</li>
+							<li class="fragment">Serves as a cache</li>
+							<li class="fragment">"Flushing" rules deletes it</li>
+						</ul>
+					</section>
+
+					<section>
+						<h2>$wp_rewrite->rules</h2>
+						<pre><code data-trim contenteditable class="php">
+array(
+	'category/(.+?)/feed/(feed|rdf|rss|rss2|atom)/?$'
+	=> 'index.php?category_name=$matches[1]&feed=$matches[2]',
+	'category/(.+?)/(feed|rdf|rss|rss2|atom)/?$'
+	=> 'index.php?category_name=$matches[1]&feed=$matches[2]',
+	'category/(.+?)/page/?([0-9]{1,})/?$'
+	=> 'index.php?category_name=$matches[1]&paged=$matches[2]',
+	'category/(.+?)/?$'
+	=> 'index.php?category_name=$matches[1]',
+	'tag/([^/]+)/feed/(feed|rdf|rss|rss2|atom)/?$'
+	=> 'index.php?tag=$matches[1]&feed=$matches[2]',
+	'tag/([^/]+)/(feed|rdf|rss|rss2|atom)/?$'
+	=> 'index.php?tag=$matches[1]&feed=$matches[2]',
+	'tag/([^/]+)/page/?([0-9]{1,})/?$'
+	=> 'index.php?tag=$matches[1]&paged=$matches[2]',
+	'tag/([^/]+)/?$'
+	=> 'index.php?tag=$matches[1]',
+	'robots\.txt$'
+	=> 'index.php?robots=1',
+	'.*wp-(atom|rdf|rss|rss2|feed|commentsrss2)\.php$'
+	=> 'index.php?feed=old',
+	# ...
+)
+
+						</code></pre>
+						<aside class="notes">
+							Since it's an array, note that you can't have the same rule twice.
+						</aside>
+					</section>
+				</section>
+
+				<section>
 					<section>
 						<h2>Recipe 2: Making one custom taxonomy a "parent" of another</h2>
 						<p class="fragment">What if we wanted to separate by body type?</p>
@@ -173,12 +241,12 @@ register_post_type( 'model', array(
 						<pre class="fragment"><code data-trim contenteditable>
 function modify_model_links( $link, $post ) {
   if ( 'model' == $post->post_type ) {
-    if ( $body_types = get_the_terms( $post->ID, 'body_type' ) ) {
-      $link = str_replace( '%body_type%', array_unshift( $body_types )->slug, $link );
-    }
-    if ( $makes = get_the_terms( $post->ID, 'make' ) ) {
-      $link = str_replace( '%make%', array_unshift( $makes )->slug, $link );
-    }
+	if ( $body_types = get_the_terms( $post->ID, 'body_type' ) ) {
+	  $link = str_replace( '%body_type%', array_unshift( $body_types )->slug, $link );
+	}
+	if ( $makes = get_the_terms( $post->ID, 'make' ) ) {
+	  $link = str_replace( '%make%', array_unshift( $makes )->slug, $link );
+	}
   }
   return $link;
 }
@@ -231,7 +299,7 @@ register_taxonomy( 'make', 'model', array(
 						<pre class="fragment"><code data-trim contenteditable>
 function modify_make_links( $termlink, $term, $taxonomy ) {
   if ( 'make' == $taxonomy ) {
-    return str_replace( '%body_type%', 'all', $termlink );
+	return str_replace( '%body_type%', 'all', $termlink );
   }
   return $termlink;
 }
@@ -250,7 +318,7 @@ add_filter( 'term_link', 'modify_make_links', 10, 3 );
 						<pre><code data-trim contenteditable>
 register_taxonomy( 'make', array(
   'rewrite' => array(
-    'slug' => 'inventory/all'
+	'slug' => 'inventory/all'
   )
 ) );
 						</code></pre>
@@ -261,7 +329,7 @@ register_taxonomy( 'make', array(
 				</section>
 
 <!--
- 				<section>
+				<section>
 					<h2>Three Rules of Rewrite API</h2>
 					<h3><strong>1) Rule Order</strong></h3>
 				</section>
@@ -278,6 +346,12 @@ register_taxonomy( 'make', array(
 								<strong>Debug Bar</strong> (&amp; friends)<br />
 								<a href="http://wordpress.org/plugins/debug-bar/" target="_blank">wordpress.org/plugins/debug-bar/</a>
 							</li>
+							<!--
+							<li class="fragment">
+								<strong>WP-CLI</strong> (&amp; friends)<br />
+								<a href="http://wp-cli.org/" target="_blank">wp-cli.org</a>
+							</li>
+							-->
 							<li class="fragment">
 								<strong>Regular Expressions Pocket Reference</strong><br />
 								By Tony Stubblebine, <a href="http://shop.oreilly.com/product/9780596514273.do" target="_blank">oreilly.com</a>
@@ -405,15 +479,15 @@ register_taxonomy( 'make', array(
 						</aside>
 					</section>
 
-					<section>
+					<section data-transition="none">
 						<h2>Behind the Scenes</h2>
-						<p>Link to gist will go here.</p>
+						<p><br />Source: <a href="https://gist.github.com/mboynes/6180890">https://gist.github.com/mboynes/6180890</a></p>
 						<aside class="notes">
 							Switch over to demo. See
 						</aside>
 					</section>
 
-					<section>
+					<section data-transition="none">
 						<h2>Step 1: Add Rewrite Tag</h2>
 						<pre><code class="php">function add_rewrite_tag( $tag, $regex, $query = '' ) { }</code></pre>
 						<pre class="fragment"><code data-trim contenteditable class="php">
@@ -427,7 +501,7 @@ add_rewrite_tag(
 						</aside>
 					</section>
 
-					<section>
+					<section data-transition="none">
 						<h2>Step 2: Add Rewrite Rule</h2>
 						<pre><code class="php">function add_rewrite_rule( $regex, $redirect, $after = 'bottom' ) { }</code></pre>
 						<pre class="fragment"><code data-trim contenteditable class="php">
@@ -439,7 +513,7 @@ add_rewrite_rule(
 						</code></pre>
 					</section>
 
-					<section>
+					<section data-transition="none">
 						<h2>Step 3: Templates</h2>
 						<p class="code-align">
 							<code>wordcamp.php</code><br />
@@ -451,7 +525,7 @@ add_rewrite_rule(
 						</p>
 					</section>
 
-					<section>
+					<section data-transition="none">
 						<h2>Step 3: Templates</h2>
 						<p class="code-align">single-wordcamp.php:</p>
 						<pre><code data-trim contenteditable class="php">
@@ -461,20 +535,20 @@ get_template_part( 'wordcamp', get_query_var( 'wc_section' ) );
 						</code></pre>
 					</section>
 
-					<section>
+					<section data-transition="none">
 						<h2>Step 3: Templates</h2>
 						<pre><code data-trim contenteditable class="php">
 function wordcamp_templates( $template = '' ) {
   $object = get_queried_object();
 
   if ( $object && 'wordcamp' == $object->post_type ) {
-    $templates = array();
-    if ( $section = get_query_var( 'wc_section' ) )
-      $templates[] = "wordcamp-{$section}.php";
-    $templates[] = 'wordcamp.php';
+	$templates = array();
+	if ( $section = get_query_var( 'wc_section' ) )
+	  $templates[] = "wordcamp-{$section}.php";
+	$templates[] = 'wordcamp.php';
 
-    if ( $new_template = locate_template( $templates ) )
-      return $new_template;
+	if ( $new_template = locate_template( $templates ) )
+	  return $new_template;
   }
 
   return $template;
@@ -483,23 +557,24 @@ add_filter( 'single_template', 'wordcamp_templates' );
 						</code></pre>
 					</section>
 
-					<section>
+					<section data-transition="none">
 						<h2>Step 4: <span class="fragment">Flush!</span></h2>
 					</section>
 
-					<section>
+					<section data-transition="none">
 						<h2>Demo</h2>
 					</section>
 
 				</section>
 
+<!--
 				<section>
-					<section>
+					<section data-transition="none">
 						<h2>Bonus Points</h2>
 						<p>Could we have used add_permastruct instead of add_rewrite_rule? <strong class="fragment">Absolutely!</strong></p>
 					</section>
 
-					<section>
+					<section data-transition="none">
 						<h2>add_permastruct() & add_rewrite_tag() 202</h2>
 						<pre class="fragment"><code data-trim contenteditable class="php">
 add_rewrite_tag( '%wc%', '([^/]+)', 'wordcamp=' );
@@ -515,7 +590,7 @@ add_permastruct( 'wc_section', 'wordcamp/%wc%/%wc_section%', array(
 						</code></pre>
 					</section>
 				</section>
-
+-->
 				<section>
 
 					<section data-transition="none" data-background="images/permanence.jpg"></section>
@@ -529,6 +604,7 @@ add_permastruct( 'wc_section', 'wordcamp/%wc%/%wc_section%', array(
 					<section data-transition="none">
 						<h2>4.1 Core Permalink Structures</h2>
 						<p>Change core permalinks, what happens to old ones?</p>
+						<p class="fragment">Demo</p>
 						<aside class="notes">
 							Demo time! Change from day + name to month + name
 						</aside>
@@ -584,10 +660,63 @@ AND post_status = 'publish'
 					</section>
 
 					<section data-transition="none">
-						<h2>Remaining Slides</h2>
+						<h2>4.2 Better Automatic Redirects</h2>
+						<p class="fragment">redirect_guess_404_permalink is called from redirect_canonical, which is hooked onto template_redirect</p>
+						<p class="fragment">We can hook in first!</p>
+					</section>
+
+					<section data-transition="none">
+						<h2>4.2 Better Automatic Redirects</h2>
+						<pre><code data-trim contenteditable class="php">
+function recipe_4_2() {
+  if ( is_404() ) {
+	$redirects = wcpdx_get_redirects();
+	$matched_rule = false;
+	$request = wcpdx_get_reqest();
+	foreach ( (array) $redirects as $match => $query ) {
+	  if ( preg_match("#^$match#", $request, $matches) ||
+		preg_match("#^$match#", urldecode($request), $matches) ) {
+
+		// Got a match.
+		$matched_rule = true;
+		break;
+	  }
+	}
+	if ( $matched_rule ) {
+	  $query = preg_replace("!^.+\?!", '', $query);
+	  $redirect = addslashes(WP_MatchesMapRegex::apply($query, $matches));
+	  if ( $redirect ) {
+		wp_redirect( home_url( "?$redirect" ), 301 );
+		exit;
+	  }
+	}
+  }
+}
+add_action( 'template_redirect', 'recipe_4_2', 5 );
+
+						</code></pre>
+					</section>
+
+					<section data-transition="none">
+						<h2>4.3 Options for Custom Redirects</h2>
 						<ul>
-							<li>4.2 Options for custom redirects</li>
-							<li>4.3 Systematically replacing old permalinks throughout content</li>
+							<li class="fragment">
+								Plugins
+								<ul>
+									<li class="fragment"><a href="http://wordpress.org/plugins/simple-301-redirects/">Simple 301 Redirects</a></li>
+									<li class="fragment"><a href="http://wordpress.org/plugins/safe-redirect-manager/">Safe Redirect Manager</a></li>
+								</ul>
+							</li>
+							<li class="fragment">Server software (Apache, Nginx, etc.)</li>
+						</ul>
+					</section>
+
+					<section data-transition="none">
+						<h2>4.4 Replacing Old Permalinks</h2>
+						<ul>
+							<li class="fragment">Your content is riddled with old links</li>
+							<li class="fragment">Is it worth changing them?</li>
+							<li class="fragment">Enter wp-cli!</li>
 						</ul>
 					</section>
 
