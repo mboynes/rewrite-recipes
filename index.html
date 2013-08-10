@@ -53,7 +53,7 @@
 
 				<!-- http://wordpress.stackexchange.com/questions/5308/custom-post-types-taxonomies-and-permalinks -->
 				<section>
-					<section>
+					<section data-transition="none">
 						<h2>Recipe 1: Adding custom taxonomies to custom post type rewrites</h2>
 						<p class="fragment">Website for car dealership</p>
 						<dl class="fragment">
@@ -72,12 +72,7 @@
 
 					</section>
 
-					<section>
-						<h2>Quick Tip: Test using "default" URLs</h2>
-						<p>e.g. domain.com/?make=toyota&amp;model=camry</p>
-					</section>
-
-					<section>
+					<section data-transition="none">
 						<h2>Step 1: Alter the post type &amp; taxonomy slugs</h2>
 						<pre class="fragment"><code data-trim contenteditable>
 register_taxonomy( 'make', 'model', array(
@@ -95,7 +90,7 @@ register_post_type( 'model', array(
 						</code></pre>
 					</section>
 
-					<section>
+					<section data-transition="none">
 						<h2>Step 2: Filter post_type_link</h2>
 						<p>Right now, the custom post type links<br />have the literal <code>%make%</code> in them.</p>
 						<pre class="fragment"><code data-trim contenteditable>
@@ -111,17 +106,16 @@ add_filter( 'post_type_link', 'modify_model_links', 10, 2 );
 						</code></pre>
 					</section>
 
-					<section>
+					<section data-transition="none">
 						<h2>Step 3: Flush Rewrites</h2>
 						<p>Any changes to rewrite rules require flushing them.</p>
 						<ol class="fragment">
 							<li>Go to <strong>Settings &rarr; Permalinks</strong></li>
 							<li>Click <strong>Save Changes</strong></li>
 						</ol>
-						<p class="fragment"><br />Any questions?</p>
 					</section>
 
-					<section>
+					<section data-transition="none">
 						<h2>Proof is in the pudding, so let's try it out!</h2>
 						<p>Psst, Matt, that's you.</p>
 					</section>
@@ -138,24 +132,34 @@ add_filter( 'post_type_link', 'modify_model_links', 10, 2 );
 
 				<section>
 
-					<section>
+					<section data-transition="none">
 						<h2>What's happening here?</h2>
 						<ol>
 							<li class="fragment">Request comes in</li>
-							<li class="fragment">WP::parse_request converts the URL to query args</li>
-							<li class="fragment">WP_Query::parse_query converts the query args to a query</li>
-							<li class="fragment">WP_Query::get_posts converts this into SQL (and posts)</li>
+							<li class="fragment"><strong>WP::parse_request converts the URL to query args</strong></li>
+							<li class="fragment">Other stuff happens, covered in other talks</li>
 						</ol>
 					</section>
 
-					<section>
-						<h2>Anatomy of a Rewrite Rule</h2>
-						<p class="fragment">Array key => value</p>
-						<p class="fragment">Regular expression (the rule) => Redirect (resulting URL)</p>
+					<section data-transition="none">
+						<h2>WP::parse_request</h2>
+						<ol>
+							<li class="fragment">"Normalizes" the URI</li>
+							<li class="fragment">Loops over all rewrite rules for a match</li>
+							<li class="fragment">Replaces the $matches with regex captures</li>
+						</ol>
 					</section>
 
-					<section>
-						<h2>Storage and Flushing</h2>
+					<section data-transition="none">
+						<h2>Anatomy of a Rewrite Rule</h2>
+						<p class="fragment">Array key => value</p>
+						<p class="fragment">Regular expression (the rule) => Redirect (default URL)</p>
+						<br />
+						<p class="fragment">Since this is an array, note that you can't have the same rule twice</p>
+					</section>
+
+					<section data-transition="none">
+						<h2>Storage</h2>
 						<ul>
 							<li class="fragment">Rewrite rules are stored in wp_options</li>
 							<li class="fragment">Serves as a cache</li>
@@ -163,7 +167,7 @@ add_filter( 'post_type_link', 'modify_model_links', 10, 2 );
 						</ul>
 					</section>
 
-					<section>
+					<section data-transition="none">
 						<h2>$wp_rewrite->rules</h2>
 						<pre><code data-trim contenteditable class="php">
 array(
@@ -191,20 +195,17 @@ array(
 )
 
 						</code></pre>
-						<aside class="notes">
-							Since it's an array, note that you can't have the same rule twice.
-						</aside>
 					</section>
 				</section>
 
 				<section>
-					<section>
+					<section data-transition="none">
 						<h2>Recipe 2: Making one custom taxonomy a "parent" of another</h2>
 						<p class="fragment">What if we wanted to separate by body type?</p>
 						<p class="fragment">Let's make body type a taxonomy, too.</p>
 					</section>
 
-					<section>
+					<section data-transition="none">
 						<h2>Post Types and Taxonomies</h2>
 						<dl class="fragment">
 							<dt>Goal URI:</dt>
@@ -218,7 +219,7 @@ array(
 						</dl>
 					</section>
 
-					<section>
+					<section data-transition="none">
 						<h2>Step 1: Alter rewrite slugs</h2>
 						<pre class="fragment"><code data-trim contenteditable>
 register_taxonomy( 'body_type', 'model', array(
@@ -236,7 +237,7 @@ register_post_type( 'model', array(
 						</code></pre>
 					</section>
 
-					<section>
+					<section data-transition="none">
 						<h2>Step 2: Filter post_type_link</h2>
 						<pre class="fragment"><code data-trim contenteditable>
 function modify_model_links( $link, $post ) {
@@ -254,18 +255,18 @@ add_filter( 'post_type_link', 'modify_model_links', 10, 2 );
 						</code></pre>
 					</section>
 
-					<section>
+					<section data-transition="none">
 						<h2>Step 2: Filter post_type_link</h2>
 						<p>What if make or body_type isn't set?<br />The permalinks won't work.</p>
 						<br />
 						<p class="fragment">You'd probably want to set defaults,<br />as "uncategorized" is to categories.</p>
 					</section>
 
-					<section>
+					<section data-transition="none">
 						<h2>Dealing with term links</h2>
 						<p class="fragment">
 							Need to replace <code>%body_type%</code> in the <strong>make</strong> URIs,<br />
-							e.g. <code>/inventory/%body_type%/%make%/</code>
+							e.g. <code>/inventory/%body_type%/.../</code>
 						</p><br />
 						<p class="fragment">This is a little trickier... <strong class="fragment">Why?</strong></p><br />
 						<p class="fragment">Which body type do we want to be the default?</p><br />
@@ -279,7 +280,7 @@ add_filter( 'post_type_link', 'modify_model_links', 10, 2 );
 						</aside>
 					</section>
 
-					<section>
+					<section data-transition="none">
 						<h2>Step 3: Add "all" body type</h2>
 						<p>WordPress makes this super easy!</p>
 						<pre class="fragment"><code contenteditable>function add_permastruct( $name, $struct, $args = array() ) { }</code></pre>
@@ -294,7 +295,7 @@ register_taxonomy( 'make', 'model', array(
 
 					</section>
 
-					<section>
+					<section data-transition="none">
 						<h2>Step 4: Filter term_link</h2>
 						<pre class="fragment"><code data-trim contenteditable>
 function modify_make_links( $termlink, $term, $taxonomy ) {
@@ -307,12 +308,12 @@ add_filter( 'term_link', 'modify_make_links', 10, 3 );
 						</code></pre>
 					</section>
 
-					<section>
+					<section data-transition="none">
 						<h2>Step 5: Flush Rewrites</h2>
 						<p>Always. Flush. Your. Rewrites.</p>
 					</section>
 
-					<section>
+					<section data-transition="none">
 						<h2>Was the term_link stuff necessary?</h2>
 						<p>Could we have simply done the following?</p>
 						<pre><code data-trim contenteditable>
@@ -328,14 +329,8 @@ register_taxonomy( 'make', array(
 
 				</section>
 
-<!--
 				<section>
-					<h2>Three Rules of Rewrite API</h2>
-					<h3><strong>1) Rule Order</strong></h3>
-				</section>
- -->
-				<section>
-					<section>
+					<section data-transition="none">
 						<h2>Detour: Helpful Tools</h2>
 						<ul>
 							<li class="fragment">
@@ -346,12 +341,6 @@ register_taxonomy( 'make', array(
 								<strong>Debug Bar</strong> (&amp; friends)<br />
 								<a href="http://wordpress.org/plugins/debug-bar/" target="_blank">wordpress.org/plugins/debug-bar/</a>
 							</li>
-							<!--
-							<li class="fragment">
-								<strong>WP-CLI</strong> (&amp; friends)<br />
-								<a href="http://wp-cli.org/" target="_blank">wp-cli.org</a>
-							</li>
-							-->
 							<li class="fragment">
 								<strong>Regular Expressions Pocket Reference</strong><br />
 								By Tony Stubblebine, <a href="http://shop.oreilly.com/product/9780596514273.do" target="_blank">oreilly.com</a>
@@ -359,7 +348,7 @@ register_taxonomy( 'make', array(
 						</ul>
 					</section>
 
-					<section>
+					<section data-transition="none">
 						<h2>Rewrite Rules Inspector</h2>
 						<p>Let's look at the last set of rewrite rules.</p>
 					</section>
@@ -482,8 +471,9 @@ register_taxonomy( 'make', array(
 					<section data-transition="none">
 						<h2>Behind the Scenes</h2>
 						<p><br />Source: <a href="https://gist.github.com/mboynes/6180890">https://gist.github.com/mboynes/6180890</a></p>
+						<p><a href="http://fieldmanager.org/">Fieldmanager.org</a></p>
 						<aside class="notes">
-							Switch over to demo. See
+							Switch over to demo.
 						</aside>
 					</section>
 
@@ -567,33 +557,9 @@ add_filter( 'single_template', 'wordcamp_templates' );
 
 				</section>
 
-<!--
-				<section>
-					<section data-transition="none">
-						<h2>Bonus Points</h2>
-						<p>Could we have used add_permastruct instead of add_rewrite_rule? <strong class="fragment">Absolutely!</strong></p>
-					</section>
+				<section data-background="images/permanence.jpg"></section>
 
-					<section data-transition="none">
-						<h2>add_permastruct() & add_rewrite_tag() 202</h2>
-						<pre class="fragment"><code data-trim contenteditable class="php">
-add_rewrite_tag( '%wc%', '([^/]+)', 'wordcamp=' );
-add_permastruct( 'wc_section', 'wordcamp/%wc%/%wc_section%', array(
-  'with_front'  => true,
-  'ep_mask'     => EP_NONE,
-  'paged'       => true,
-  'feed'        => true,
-  'forcomments' => false,
-  'walk_dirs'   => false, # not the default
-  'endpoints'   => true
-) );
-						</code></pre>
-					</section>
-				</section>
--->
 				<section>
-
-					<section data-transition="none" data-background="images/permanence.jpg"></section>
 
 					<section data-transition="none">
 						<h2>Recipe 4: 301 Ways to Update your Permalinks</h2>
@@ -607,12 +573,6 @@ add_permastruct( 'wc_section', 'wordcamp/%wc%/%wc_section%', array(
 						<p class="fragment">Demo</p>
 						<aside class="notes">
 							Demo time! Change from day + name to month + name
-						</aside>
-					</section>
-
-					<section data-transition="none" data-background="images/witch.png">
-						<aside class="notes">
-							Accuse WordPress of being a witch
 						</aside>
 					</section>
 
@@ -657,12 +617,6 @@ AND post_status = 'publish'
 						<aside class="notes">
 							Give a demo of addressing a post by its first letter
 						</aside>
-					</section>
-
-					<section data-transition="none">
-						<h2>4.2 Better Automatic Redirects</h2>
-						<p class="fragment">redirect_guess_404_permalink is called from redirect_canonical, which is hooked onto template_redirect</p>
-						<p class="fragment">We can hook in first!</p>
 					</section>
 
 					<section data-transition="none">
@@ -723,21 +677,11 @@ add_action( 'template_redirect', 'recipe_4_2', 5 );
 				</section>
 
 				<section>
-					<h2>About Me</h2>
-					<ul>
-						<li>Live in Boston</li>
-						<li>Building websites for 15+ years</li>
-						<li>Developing on WordPress since 2006</li>
-						<li>Outdoors enthusiast</li>
-					</ul>
-				</section>
-
-				<section>
 					<h2>About Alley Interactive</h2>
 					<ul>
 						<li>Multi-platform development agency based in New York City, with team members around the country</li>
 						<li>Clients in news media, entertainment, non-profit, and education</li>
-						<li>We'd like to see WordPress in use on more large projects, and we'd like to advance WordPress's credibility as a platform for large projects</li>
+						<li>We strive to advance WordPress's credibility as a platform for large projects</li>
 						<li>WordPress.com VIP Partner</li>
 						<li><strong>We're hiring!</strong></li>
 					</ul>
@@ -745,9 +689,8 @@ add_action( 'template_redirect', 'recipe_4_2', 5 );
 
 				<section>
 					<h1>Questions?</h1>
-					<p>@todo</p>
 					<dl id="resources">
-						<dt>This:</dt> <dd>http://boyn.es</dd>
+						<dt>This:</dt> <dd>http://boyn.es/wcpdx/</dd>
 					</dl>
 				</section>
 
