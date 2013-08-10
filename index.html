@@ -137,8 +137,7 @@ add_filter( 'post_type_link', 'modify_model_links', 10, 2 );
 						<ol>
 							<li class="fragment">Request comes in</li>
 							<li class="fragment"><strong>WP::parse_request converts the URL to query args</strong></li>
-							<li class="fragment">WP_Query::parse_query converts the query args to a query</li>
-							<li class="fragment">WP_Query::get_posts converts this into SQL (and posts)</li>
+							<li class="fragment">Other stuff happens, covered in other talks</li>
 						</ol>
 					</section>
 
@@ -618,12 +617,6 @@ AND post_status = 'publish'
 						<aside class="notes">
 							Give a demo of addressing a post by its first letter
 						</aside>
-					</section>
-
-					<section data-transition="none">
-						<h2>4.2 Better Automatic Redirects</h2>
-						<p class="fragment">redirect_guess_404_permalink is called from redirect_canonical, which is hooked onto template_redirect</p>
-						<p class="fragment">We can hook in first!</p>
 					</section>
 
 					<section data-transition="none">
