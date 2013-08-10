@@ -145,7 +145,7 @@ add_filter( 'post_type_link', 'modify_model_links', 10, 2 );
 					<section data-transition="none">
 						<h2>WP::parse_request</h2>
 						<ol>
-							<li class="fragment">Cleans up the URI</li>
+							<li class="fragment">"Normalizes" the URI</li>
 							<li class="fragment">Loops over all rewrite rules for a match</li>
 							<li class="fragment">Replaces the $matches with regex captures</li>
 						</ol>
@@ -154,7 +154,9 @@ add_filter( 'post_type_link', 'modify_model_links', 10, 2 );
 					<section data-transition="none">
 						<h2>Anatomy of a Rewrite Rule</h2>
 						<p class="fragment">Array key => value</p>
-						<p class="fragment">Regular expression (the rule) => Redirect (resulting URL)</p>
+						<p class="fragment">Regular expression (the rule) => Redirect (default URL)</p>
+						<br />
+						<p class="fragment">Since this is an array, note that you can't have the same rule twice</p>
 					</section>
 
 					<section data-transition="none">
@@ -194,9 +196,6 @@ array(
 )
 
 						</code></pre>
-						<aside class="notes">
-							Since it's an array, note that you can't have the same rule twice.
-						</aside>
 					</section>
 				</section>
 
@@ -473,6 +472,7 @@ register_taxonomy( 'make', array(
 					<section data-transition="none">
 						<h2>Behind the Scenes</h2>
 						<p><br />Source: <a href="https://gist.github.com/mboynes/6180890">https://gist.github.com/mboynes/6180890</a></p>
+						<p><a href="http://fieldmanager.org/">Fieldmanager.org</a></p>
 						<aside class="notes">
 							Switch over to demo.
 						</aside>
